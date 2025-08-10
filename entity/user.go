@@ -1,7 +1,7 @@
 package entity
 
 type User struct {
-	ID       uint `gorm:"primaryKey"`
+	ID       int
 	Username string
 	Email    string
 	Password string

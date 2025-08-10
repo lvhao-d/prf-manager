@@ -21,6 +21,7 @@ func NewCoQuanHandler(u usecase.CoQuanUseCase) *CoQuanHandler {
 
 func (h *CoQuanHandler) Create(w http.ResponseWriter, r *http.Request) {
 	req := &input.CreateCoQuanRequest{}
+
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

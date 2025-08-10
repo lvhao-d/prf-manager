@@ -34,10 +34,18 @@ func main() {
 	coQuanRepo := repository.NewCoQuanRepository(gdb)
 	coQuanUseCase := usecase.NewCoQuanUseCase(coQuanRepo)
 	coQuanHandler := handler.NewCoQuanHandler(coQuanUseCase)
+	khoRepo := repository.NewKhoRepository(gdb)
+	khoUseCase := usecase.NewKhoUseCase(khoRepo)
+	khoHandler := handler.NewKhoHandler(khoUseCase)
+	hosoRepo := repository.NewHoSoRepository(gdb)
+	hoSoUseCase := usecase.NewHoSoUseCase(hosoRepo)
+	hoSoHandler := handler.NewHoSoHandler(hoSoUseCase)
 
 	route := &route.Route{
 		UserHandler:   userHandler,
 		CoQuanHandler: coQuanHandler,
+		KhoHandler:    khoHandler,
+		HoSoHandler:   hoSoHandler,
 	}
 	port := os.Getenv("PORT")
 	if port == "" {

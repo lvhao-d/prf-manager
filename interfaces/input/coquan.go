@@ -1,19 +1,14 @@
 package input
 
 type CreateCoQuanRequest struct {
-	Name string `json:"name"`
+	ID  string
+	Ten string
 }
 
 type CreateCoQuanResponse struct {
-	ID string `json:"id"`
+	ID string
 }
 
 type UpdateCoQuanRequest struct {
-	Name string `json:"name"`
+	Ten string
 }
-
-// func (r *CreateCoQuanRequest) ToDomain() usecase.CreateCoQuanRequest {
-// 	return usecase.CreateCoQuanRequest{
-// 		Name: r.Name,
-// 	}
-// }

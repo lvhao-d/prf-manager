@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"prf-manager/interfaces/input"
 	"prf-manager/interfaces/usecase"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type KhoHandler struct {
@@ -43,4 +46,47 @@ func (h *KhoHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(khos)
+}
+func (h *KhoHandler) Update(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Kho ID", http.StatusBadRequest)
+		return
+	}
+
+	req := &input.UpdateKhoRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := h.u.UpdateKho(r.Context(), uint(id), req); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Kho updated successfully",
+	})
+}
+
+func (h *KhoHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Kho ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.u.DeleteKho(r.Context(), uint(id)); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Kho deleted successfully",
+	})
 }

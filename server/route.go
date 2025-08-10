@@ -29,5 +29,18 @@ func (route *Route) NewRouter() chi.Router {
 		r.Delete("/{id}", route.CoQuanHandler.Delete)
 
 	})
+	r.Route("/khos", func(r chi.Router) {
+		r.Post("/", route.KhoHandler.Create)
+		r.Get("/", route.KhoHandler.GetAll)
+		r.Patch("/{id}", route.KhoHandler.Update)
+		r.Delete("/{id}", route.KhoHandler.Delete)
+
+	})
+	r.Route("/hosos", func(r chi.Router) {
+		r.Post("/", route.HoSoHandler.Create)
+		r.Get("/", route.HoSoHandler.GetAll)
+		r.Patch("/{id}", route.HoSoHandler.Update)
+		r.Delete("/{id}", route.HoSoHandler.Delete)
+	})
 	return r
 }

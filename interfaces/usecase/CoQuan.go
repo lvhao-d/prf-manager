@@ -23,7 +23,7 @@ func NewCoQuanUseCase(coQuanRepo repository.CoQuanRepository) CoQuanUseCase {
 }
 func (c *coQuanUseCase) CreateCoQuan(ctx context.Context, p *input.CreateCoQuanRequest) error {
 	coQuan := &entity.CoQuan{
-		Ten: p.Name,
+		Ten: p.Ten,
 	}
 	return c.coQuanRepo.Create(coQuan)
 
@@ -38,7 +38,7 @@ func (c *coQuanUseCase) UpdateCoQuan(ctx context.Context, id uint, p *input.Upda
 	if err != nil {
 		return err
 	}
-	coQuan.Ten = p.Name
+	coQuan.Ten = p.Ten
 	return c.coQuanRepo.Update(&coQuan)
 }
 func (c *coQuanUseCase) DeleteCoQuan(ctx context.Context, id uint) error {
