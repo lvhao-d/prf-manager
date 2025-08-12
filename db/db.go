@@ -29,7 +29,7 @@ func NewDB() (*gorm.DB, error) {
 }
 
 func Migrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&entity.Kho{}, &entity.HoSo{}, &entity.User{}, &entity.CoQuan{})
+	err := db.AutoMigrate(&entity.Warehouse{}, &entity.Record{}, &entity.User{}, &entity.Agency{})
 	if err != nil {
 		return fmt.Errorf("failed to migrate database: %w", err)
 	}

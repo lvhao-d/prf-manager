@@ -8,10 +8,10 @@ import (
 )
 
 type Route struct {
-	UserHandler   *handler.UserHandler
-	CoQuanHandler *handler.CoQuanHandler
-	KhoHandler    *handler.KhoHandler
-	HoSoHandler   *handler.HoSoHandler
+	UserHandler      *handler.UserHandler
+	AgencyHandler    *handler.AgencyHandler
+	WareHouseHandler *handler.WareHouseHandler
+	RecordHandler    *handler.RecordHandler
 }
 
 func (route *Route) NewRouter() chi.Router {
@@ -19,28 +19,28 @@ func (route *Route) NewRouter() chi.Router {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Route("/users", func(r chi.Router) {
-		r.Post("/", route.UserHandler.Create)
-	})
-	r.Route("/coquans", func(r chi.Router) {
-		r.Post("/", route.CoQuanHandler.Create)
-		r.Get("/", route.CoQuanHandler.GetAll)
-		r.Patch("/{id}", route.CoQuanHandler.Update)
-		r.Delete("/{id}", route.CoQuanHandler.Delete)
+	r.Route("/api", func(r chi.Router) {
+		r.Route("/agency", func(r chi.Router) {
+			r.Post("/", route.AgencyHandler.Create)
+			r.Get("/", route.AgencyHandler.GetAll)
+			r.Patch("/{id}", route.AgencyHandler.Update)
+			r.Delete("/{id}", route.AgencyHandler.Delete)
 
-	})
-	r.Route("/khos", func(r chi.Router) {
-		r.Post("/", route.KhoHandler.Create)
-		r.Get("/", route.KhoHandler.GetAll)
-		r.Patch("/{id}", route.KhoHandler.Update)
-		r.Delete("/{id}", route.KhoHandler.Delete)
+		})
+		r.Route("/warehouse", func(r chi.Router) {
+			r.Post("/", route.WareHouseHandler.Create)
+			r.Get("/", route.WareHouseHandler.GetAll)
+			r.Patch("/{id}", route.WareHouseHandler.Update)
+			r.Delete("/{id}", route.WareHouseHandler.Delete)
 
-	})
-	r.Route("/hosos", func(r chi.Router) {
-		r.Post("/", route.HoSoHandler.Create)
-		r.Get("/", route.HoSoHandler.GetAll)
-		r.Patch("/{id}", route.HoSoHandler.Update)
-		r.Delete("/{id}", route.HoSoHandler.Delete)
+		})
+		r.Route("/record", func(r chi.Router) {
+			r.Post("/", route.RecordHandler.Create)
+			r.Get("/", route.RecordHandler.GetAll)
+			r.Patch("/{id}", route.RecordHandler.Update)
+			r.Delete("/{id}", route.RecordHandler.Delete)
+		})
+		r.Post("/login", route.UserHandler.Login)
 	})
 	return r
 }

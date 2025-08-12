@@ -31,21 +31,21 @@ func main() {
 	userRepo := repository.NewUserRepository(gdb)
 	userUseCase := usecase.NewUserUseCase(userRepo)
 	userHandler := handler.NewUserHandler(userUseCase)
-	coQuanRepo := repository.NewCoQuanRepository(gdb)
-	coQuanUseCase := usecase.NewCoQuanUseCase(coQuanRepo)
-	coQuanHandler := handler.NewCoQuanHandler(coQuanUseCase)
-	khoRepo := repository.NewKhoRepository(gdb)
-	khoUseCase := usecase.NewKhoUseCase(khoRepo)
-	khoHandler := handler.NewKhoHandler(khoUseCase)
-	hosoRepo := repository.NewHoSoRepository(gdb)
-	hoSoUseCase := usecase.NewHoSoUseCase(hosoRepo)
-	hoSoHandler := handler.NewHoSoHandler(hoSoUseCase)
+	agencyRepo := repository.NewAgencyRepository(gdb)
+	agencyUseCase := usecase.NewAgencyUseCase(agencyRepo)
+	agencyHandler := handler.NewAgencyHandler(agencyUseCase)
+	wareHouseRepo := repository.NewWareHouseRepository(gdb)
+	wareHouseUseCase := usecase.NewWareHouseUseCase(wareHouseRepo)
+	wareHouseHandler := handler.NewWareHouseHandler(wareHouseUseCase)
+	recordRepo := repository.NewRecordRepository(gdb)
+	recordUseCase := usecase.NewRecordUseCase(recordRepo)
+	recordHandler := handler.NewRecordHandler(recordUseCase)
 
 	route := &route.Route{
-		UserHandler:   userHandler,
-		CoQuanHandler: coQuanHandler,
-		KhoHandler:    khoHandler,
-		HoSoHandler:   hoSoHandler,
+		UserHandler:      userHandler,
+		AgencyHandler:    agencyHandler,
+		WareHouseHandler: wareHouseHandler,
+		RecordHandler:    recordHandler,
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
