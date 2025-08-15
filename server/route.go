@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/rs/cors"
 )
 
 type Route struct {
@@ -18,6 +19,15 @@ func (route *Route) NewRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "api_key"},
+		ExposedHeaders:   []string{},
+		AllowCredentials: true,
+		MaxAge:           300,
+		Debug:            true,
+	}).Handler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/agency", func(r chi.Router) {
@@ -39,8 +49,10 @@ func (route *Route) NewRouter() chi.Router {
 			r.Get("/", route.RecordHandler.GetAll)
 			r.Patch("/{id}", route.RecordHandler.Update)
 			r.Delete("/{id}", route.RecordHandler.Delete)
+			r.Patch("/{id}/chuyen-luu-tru", route.RecordHandler.TransferToArchive)
+			r.Post("/search", route.RecordHandler.Search)
 		})
-		r.Post("/login", route.UserHandler.Login)
+		r.Post("/sign-in", route.UserHandler.Login)
 	})
 	return r
 }

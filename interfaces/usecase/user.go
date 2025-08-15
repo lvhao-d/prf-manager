@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
-
 	"prf-manager/entity"
 	repository "prf-manager/infrastructure"
 	"prf-manager/interfaces/input"
+	"prf-manager/interfaces/output"
 	"prf-manager/pkg/jwt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +13,7 @@ import (
 
 type UserUseCase interface {
 	Create(ctx context.Context, p *input.CreateUserRequest) error
-	Login(ctx context.Context, p *input.UserLoginRequest) (string, error)
+	Login(ctx context.Context, p *input.UserLoginRequest) (*output.LoginResponse, error)
 }
 type userUseCase struct {
 	userRepo repository.UserRepository
@@ -32,23 +32,27 @@ func (u *userUseCase) Create(ctx context.Context, p *input.CreateUserRequest) er
 	return u.userRepo.Create(user)
 }
 
-func (u *userUseCase) Login(ctx context.Context, p *input.UserLoginRequest) (string, error) {
+func (u *userUseCase) Login(ctx context.Context, p *input.UserLoginRequest) (*output.LoginResponse, error) {
 	user, err := u.userRepo.GetByUserName(p.Username)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(p.Password))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	token, err := jwt.GenerateToken(user.ID, user.Username)
+	accessToken, err := jwt.GenerateToken(user.ID, user.Username)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token, nil
+	return &output.LoginResponse{
+		ID:          user.ID,
+		Username:    user.Username,
+		AccessToken: accessToken,
+	}, nil
 
 }

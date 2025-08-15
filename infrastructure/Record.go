@@ -12,6 +12,7 @@ type RecordRepository interface {
 	Delete(id uint) error
 	GetByID(id uint) (*entity.Record, error)
 	GetAll() ([]*entity.Record, error)
+	SearchRecord(warehouseID, archiveAgencyID int) ([]*entity.Record, error)
 }
 type recordRepository struct {
 	db *gorm.DB
@@ -47,4 +48,26 @@ func (r *recordRepository) GetAll() ([]*entity.Record, error) {
 		return nil, err
 	}
 	return record, nil
+}
+
+func (r *recordRepository) SearchRecord(warehouseID, archiveAgencyID int) ([]*entity.Record, error) {
+	var records []*entity.Record
+
+	db := r.db
+
+	if archiveAgencyID != 0 {
+		db = db.Where("archive_agency_id = ?", archiveAgencyID)
+	} else {
+		db.Find(&records)
+	}
+
+	if warehouseID != 0 {
+		db = db.Where("warehouse_id = ?", warehouseID)
+	}
+
+	if err := db.Find(&records).Error; err != nil {
+		return nil, err
+	}
+
+	return records, nil
 }

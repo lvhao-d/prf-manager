@@ -23,67 +23,57 @@ func NewWareHouseHandler(u usecase.WareHouseUseCase) *WareHouseHandler {
 func (h *WareHouseHandler) Create(w http.ResponseWriter, r *http.Request) {
 	req := &input.CreateWareHouseRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		// http.Error(w, err.Error(), http.StatusBadRequest)
 		h.JSONError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	if err := h.u.CreateWareHouse(r.Context(), req); err != nil {
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		h.JSONError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	// json.NewEncoder(w).Encode(map[string]interface{}{
-	// 	"message": "WareHouse created successfully",
-	// })
 	h.JSON(w, map[string]interface{}{
 		"message": "WareHouse created successfully",
 	}, http.StatusCreated)
 }
+
+// get all
 func (h *WareHouseHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	wareHouse, err := h.u.GetAll(r.Context())
 	if err != nil {
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		h.JSONError(w, err, http.StatusInternalServerError)
 		return
 	}
 	if len(wareHouse) == 0 {
-		// http.Error(w, "No WareHouse found", http.StatusNotFound)
 		h.JSONError(w, fmt.Errorf("no WareHouse found"), http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(wareHouse)
 	h.JSON(w, wareHouse, http.StatusOK)
 }
+
+// update kho
 func (h *WareHouseHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		// http.Error(w, "Invalid WareHouse ID", http.StatusBadRequest)
 		h.JSONError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	req := &input.UpdateWareHouseRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		// http.Error(w, err.Error(), http.StatusBadRequest)
 		h.JSONError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	if err := h.u.UpdateWareHouse(r.Context(), uint(id), req); err != nil {
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		h.JSONError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(map[string]interface{}{
-	// 	"message": "WareHouse updated successfully",
-	// })
 	h.JSON(w, map[string]interface{}{
 		"message": "WareHouse updated successfully",
 	}, http.StatusOK)

@@ -12,3 +12,13 @@ type UpdateRecordRequest struct {
 	WarehouseID     string
 	ArchiveAgencyID string
 }
+type TransferToArchive struct {
+	ID              string
+	WarehouseID     string
+	ArchiveAgencyID string
+}
+
+type Search struct {
+	WarehouseID     string
+	ArchiveAgencyID string
+}
