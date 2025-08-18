@@ -62,7 +62,15 @@ func (h *RecordHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 func (h *RecordHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
-	record, err := h.u.GetAllRecord(r.Context())
+	pageStr := r.URL.Query().Get("page")
+	page := 1
+	if pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+
+	record, total, err := h.u.GetAllRecord(r.Context(), page)
 	if err != nil {
 		h.JSONError(w, err, http.StatusInternalServerError)
 		return
@@ -71,8 +79,20 @@ func (h *RecordHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		h.JSONError(w, fmt.Errorf("no record found"), http.StatusNotFound)
 		return
 	}
+	totalPage := total / 5
+
+	if total%5 != 0 {
+		totalPage = totalPage + 1
+	}
+
 	w.WriteHeader(http.StatusOK)
-	h.JSON(w, record, http.StatusOK)
+
+	h.JSON(w, map[string]interface{}{
+		"data":      record,
+		"page":      page,
+		"total":     total,
+		"totalPage": totalPage,
+	}, http.StatusOK)
 }
 func (h *RecordHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
@@ -161,4 +181,22 @@ func (h *RecordHandler) Search(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	h.JSON(w, records, http.StatusOK)
 
+}
+func (h *RecordHandler) UndoTransfer(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.JSONError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	if err := h.u.UndoTransfer(r.Context(), uint(id)); err != nil {
+		h.JSONError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	h.JSON(w, map[string]interface{}{
+		"message": "Record undo successfully",
+	}, http.StatusOK)
 }

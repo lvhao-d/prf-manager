@@ -11,7 +11,7 @@ type RecordRepository interface {
 	Update(record *entity.Record) error
 	Delete(id uint) error
 	GetByID(id uint) (*entity.Record, error)
-	GetAll() ([]*entity.Record, error)
+	GetAll(page int) ([]*entity.Record, int64, error)
 	SearchRecord(warehouseID, archiveAgencyID int) ([]*entity.Record, error)
 }
 type recordRepository struct {
@@ -41,13 +41,34 @@ func (r *recordRepository) GetByID(id uint) (*entity.Record, error) {
 	}
 	return &record, nil
 }
-func (r *recordRepository) GetAll() ([]*entity.Record, error) {
-	var record []*entity.Record
-	if err := r.db.
-		Find(&record).Error; err != nil {
-		return nil, err
+func (r *recordRepository) GetAll(page int) ([]*entity.Record, int64, error) {
+	if page < 1 {
+		page = 1
 	}
-	return record, nil
+	limit := 5
+	offset := (page - 1) * limit
+
+	var record []*entity.Record
+
+	var total int64
+
+	if err := r.db.Model(&entity.Record{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := r.db.
+		Offset(offset).
+		Limit(limit).
+		Find(&record).Error; err != nil {
+		return nil, 0, err
+	}
+	return record, total, nil
+
+	// // if err := r.db.
+	// // 	Find(&record).Error; err != nil {
+	// // 	return nil, err
+	// // }
+	// return record, nil
 }
 
 func (r *recordRepository) SearchRecord(warehouseID, archiveAgencyID int) ([]*entity.Record, error) {

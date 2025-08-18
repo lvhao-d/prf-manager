@@ -6,6 +6,8 @@ type Record struct {
 	WarehouseID     int
 	ArchiveAgencyID int
 
+	PrevWarehouseID     int
+	PrevArchiveAgencyID int
 	// Quan hệ ngược
 	Warehouse *Warehouse `gorm:"foreignKey:WarehouseID" json:"warehouse,omitempty"`
 }

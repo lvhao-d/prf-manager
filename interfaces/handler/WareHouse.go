@@ -83,21 +83,19 @@ func (h *WareHouseHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		// http.Error(w, "Invalid WareHouse ID", http.StatusBadRequest)
+
 		h.JSONError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	if err := h.u.DeleteWareHouse(r.Context(), uint(id)); err != nil {
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		h.JSONError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(map[string]interface{}{
-	// 	"message": "WareHouse deleted successfully",
-	// })
+
 	h.JSON(w, map[string]interface{}{
 		"message": "WareHouse deleted successfully",
 	}, http.StatusOK)

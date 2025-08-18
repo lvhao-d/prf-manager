@@ -13,10 +13,11 @@ type RecordUseCase interface {
 	CreateRecord(ctx context.Context, req *input.CreateRecordRequest) error
 	GetRecordByID(ctx context.Context, id uint) (*entity.Record, error)
 	TransferToArchive(ctx context.Context, id uint, req *input.UpdateRecordRequest) error
-	GetAllRecord(ctx context.Context) ([]*entity.Record, error)
+	GetAllRecord(ctx context.Context, page int) ([]*entity.Record, int64, error)
 	UpdateRecord(ctx context.Context, id uint, req *input.UpdateRecordRequest) error
 	DeleteRecord(ctx context.Context, id uint) error
 	SearchRecord(ctx context.Context, req *input.Search) ([]*entity.Record, error)
+	UndoTransfer(ctx context.Context, id uint) error
 }
 type RecordUseCaseImpl struct {
 	recordRepo repository.RecordRepository
@@ -42,12 +43,12 @@ func (h *RecordUseCaseImpl) CreateRecord(ctx context.Context, req *input.CreateR
 func (h *RecordUseCaseImpl) GetRecordByID(ctx context.Context, id uint) (*entity.Record, error) {
 	return h.recordRepo.GetByID(id)
 }
-func (h *RecordUseCaseImpl) GetAllRecord(ctx context.Context) ([]*entity.Record, error) {
-	record, err := h.recordRepo.GetAll()
+func (h *RecordUseCaseImpl) GetAllRecord(ctx context.Context, page int) ([]*entity.Record, int64, error) {
+	record, total, err := h.recordRepo.GetAll(page)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return record, nil
+	return record, total, nil
 }
 
 func (h *RecordUseCaseImpl) UpdateRecord(ctx context.Context, id uint, req *input.UpdateRecordRequest) error {
@@ -85,10 +86,33 @@ func (h *RecordUseCaseImpl) TransferToArchive(ctx context.Context, id uint, req 
 	if record.ID == 0 {
 		return nil
 	}
+
+	record.PrevWarehouseID = record.WarehouseID
+	record.PrevArchiveAgencyID = record.ArchiveAgencyID
+
 	WarehouseID, _ := strconv.ParseInt(req.WarehouseID, 10, 64)
+
 	record.WarehouseID = int(WarehouseID)
 	record.Name = req.Name
 	record.ArchiveAgencyID = 99
+
+	return h.recordRepo.Update(record)
+}
+
+func (h *RecordUseCaseImpl) UndoTransfer(ctx context.Context, id uint) error {
+	record, err := h.recordRepo.GetByID(id)
+	if err != nil {
+		return err
+	}
+	if record.ID == 0 {
+		return nil
+	}
+
+	record.WarehouseID = record.PrevWarehouseID
+	record.ArchiveAgencyID = record.PrevArchiveAgencyID
+
+	record.PrevWarehouseID = 0
+	record.PrevArchiveAgencyID = 0
 
 	return h.recordRepo.Update(record)
 }

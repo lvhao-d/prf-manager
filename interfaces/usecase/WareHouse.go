@@ -59,7 +59,7 @@ func (k *wareHouseUseCase) DeleteWareHouse(ctx context.Context, id uint) error {
 		return err
 	}
 	if wareHouse.ID == 0 {
-		return nil // No need to delete if Kho does not exist
+		return nil
 	}
 	return k.wareHouseRepo.Delete(id)
 }

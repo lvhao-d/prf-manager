@@ -50,6 +50,7 @@ func (route *Route) NewRouter() chi.Router {
 			r.Patch("/{id}", route.RecordHandler.Update)
 			r.Delete("/{id}", route.RecordHandler.Delete)
 			r.Patch("/{id}/chuyen-luu-tru", route.RecordHandler.TransferToArchive)
+			r.Patch("/{id}/huy-luu-tru", route.RecordHandler.UndoTransfer)
 			r.Post("/search", route.RecordHandler.Search)
 		})
 		r.Post("/sign-in", route.UserHandler.Login)
